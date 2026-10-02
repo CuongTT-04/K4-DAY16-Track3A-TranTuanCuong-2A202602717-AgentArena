@@ -480,6 +480,10 @@ class ReActAgent:
         # one already, so a caller that does not pass one still works.
         self.corpus = corpus if corpus is not None else getattr(tools, "_corpus", None)
         self.max_steps = max(1, int(max_steps))
+        inner = getattr(model, "inner", model)
+        from arena.model import MockModel
+        if not isinstance(inner, MockModel) and REAL_MODEL_PROMPT_ADDENDUM not in system_prompt:
+            system_prompt = real_model_system_prompt(system_prompt)
         self.system_prompt = system_prompt
         self.last_context: AgentContext | None = None
         # Per-run bookkeeping for the two `_parse` guards. Reset in
